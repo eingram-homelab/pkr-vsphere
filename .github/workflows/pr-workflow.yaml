@@ -1,0 +1,14 @@
+name: PR Workflow
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**.pkr.hcl'
+
+jobs:
+  validate:
+    uses: eingram-homelab/reusable_workflows/.github/workflows/packer-validate.yaml@main
+    name: Validate Packer Project
+    secrets:
+      VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
