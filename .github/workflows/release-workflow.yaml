@@ -1,8 +1,9 @@
+---
 name: Release Workflow
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - '**.pkr.hcl'
   workflow_dispatch:
