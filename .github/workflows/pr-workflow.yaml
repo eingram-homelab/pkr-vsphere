@@ -3,8 +3,7 @@ name: PR Workflow
 
 on:
   pull_request:
-    branchmes:333wsvwev
-
+    branches:
       - main
     paths:
       - '**.pkr.hcl'
