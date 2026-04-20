@@ -1,5 +1,5 @@
 ---
-name: Validate Reusable Workflows
+name: Validate Workflows
 
 on:
   pull_request:
