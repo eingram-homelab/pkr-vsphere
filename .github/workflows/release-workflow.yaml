@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate:
-    uses: eingram-homelab/reusable_workflows/.github/workflows/packer-build.yaml@main
+    uses: eingram-homelab/reusable_workflows/.github/workflows/_packer-build.yaml@main
     name: Build vSphere Template
     secrets:
       VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
