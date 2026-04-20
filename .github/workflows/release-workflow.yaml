@@ -5,10 +5,18 @@ on:
     branches: [ main ]
     paths:
       - '**.pkr.hcl'
+  workflow_dispatch:
+    inputs:
+      directories:
+        description: 'Space-separated list of packer directories to build (e.g. rocky9/packer rocky10/packer). Required when running manually.'
+        required: true
+        type: string
 
 jobs:
   validate:
     uses: eingram-homelab/reusable_workflows/.github/workflows/_packer-build.yaml@main
     name: Build vSphere Template
+    with:
+      directories: ${{ inputs.directories || '' }}
     secrets:
       VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
