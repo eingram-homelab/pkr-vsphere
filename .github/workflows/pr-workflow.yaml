@@ -3,7 +3,8 @@ name: PR Workflow
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
     paths:
       - '**.pkr.hcl'
 
