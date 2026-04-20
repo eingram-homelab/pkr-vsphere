@@ -5,12 +5,36 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - '**.pkr.hcl'
 
 jobs:
+  changes:
+    runs-on: arc-runners
+    outputs:
+      packer: ${{ steps.changed.outputs.any_changed }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for packer file changes
+        id: changed
+        uses: tj-actions/changed-files@v46.0.5
+        with:
+          files: '**.pkr.hcl'
+
   validate:
-    uses: eingram-homelab/reusable_workflows/.github/workflows/_packer-validate.yaml@main
+    needs: changes
+    if: needs.changes.outputs.packer == 'true'
     name: Validate Packer Project
+    uses: eingram-homelab/reusable_workflows/.github/workflows/_packer-validate.yaml@main
     secrets:
       VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+
+  gate:
+    needs: [validate]
+    if: always()
+    runs-on: arc-runners
+    steps:
+      - name: Check validation result
+        run: |
+          result="${{ needs.validate.result }}"
+          if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
+            exit 1
+          fi
