@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       directories:
-        description: 'Space-separated list of packer directories to build (e.g. rocky9/packer rocky10/packer). Required when running manually.'
+        description: 'Space-separated list of packer directories to build (e.g. rocky9 rocky10). Required when running manually.'
         required: true
         type: string
 
@@ -21,6 +21,7 @@ jobs:
       directories: ${{ inputs.directories || '' }}
     secrets:
       VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+      GCP_STORAGE: ${{ secrets.GCP_STORAGE }}
 
   gate:
     needs: [validate]
