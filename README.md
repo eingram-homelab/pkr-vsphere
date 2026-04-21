@@ -8,7 +8,6 @@ Secrets (vCenter credentials, SSH passwords) are retrieved from HashiCorp Vault 
 
 | Directory | OS |
 |---|---|
-| `rhel85/` | Red Hat Enterprise Linux 8.5 |
 | `rocky9/` | Rocky Linux 9 |
 | `rocky9_rke2/` | Rocky Linux 9 (RKE2 node) |
 | `rocky10/` | Rocky Linux 10 |
@@ -25,7 +24,7 @@ Secrets (vCenter credentials, SSH passwords) are retrieved from HashiCorp Vault 
 Each template follows this layout:
 
 ```
-<os>/packer/
+<os>/
 ├── vsphere_<os>.pkr.hcl        # Main build and source block
 ├── variables.pkr.hcl           # Variable declarations
 ├── <os>.auto.pkrvars.hcl       # Variable values (vCenter targets, ISO paths, sizing)
@@ -42,7 +41,7 @@ The repository-level `scripts/publish_template.ps1` is called by CI after a succ
 
 ## Prerequisites
 
-- [Packer](https://developer.hashicorp.com/packer/downloads) ≥ 1.15
+- [Packer](https://developer.hashicorp.com/downloads) ≥ 1.15
 - HashiCorp Vault accessible at `http://vault.local.lan:8200` with a valid token
 - vCenter/ESXi accessible at `vcsa-1.local.lan`
 - ISO files pre-staged in the vCenter datastore
@@ -54,13 +53,13 @@ The repository-level `scripts/publish_template.ps1` is called by CI after a succ
 Always run `packer init` before first use or after changing plugin versions:
 
 ```bash
-packer init <os>/packer/
+packer init <os>/
 ```
 
 ### Validate (syntax only — no Vault required)
 
 ```bash
-packer validate -syntax-only <os>/packer/
+packer validate -syntax-only <os>/
 ```
 
 ### Validate (full — requires Vault)
@@ -68,7 +67,7 @@ packer validate -syntax-only <os>/packer/
 ```bash
 export VAULT_ADDR=http://vault.local.lan:8200
 export VAULT_TOKEN=<token>
-packer validate <os>/packer/
+packer validate <os>/
 ```
 
 ### Build
@@ -76,18 +75,18 @@ packer validate <os>/packer/
 ```bash
 export VAULT_ADDR=http://vault.local.lan:8200
 export VAULT_TOKEN=<token>
-packer build <os>/packer/
+packer build <os>/
 ```
 
-After a successful build, `<os>/packer/build-manifest.json` is written with the artifact ID and timestamped VM name (format: `<template_name>__YYYYMMDDHHmmss`).
+After a successful build, `<os>/build-manifest.json` is written with the artifact ID and timestamped VM name (format: `<template_name>__YYYYMMDDHHmmss`).
 
 ### Format check
 
 ```bash
-packer fmt -check <os>/packer/
+packer fmt -check <os>/
 ```
 
-Run `packer fmt <os>/packer/` (without `-check`) to auto-fix formatting.
+Run `packer fmt <os>/` (without `-check`) to auto-fix formatting.
 
 ## CI/CD
 
