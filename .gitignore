@@ -71,6 +71,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Packer specific
 packerlog.txt
 /.ansible
 /.vscode
+build-manifest.json
