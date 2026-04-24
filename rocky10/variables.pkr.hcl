@@ -59,3 +59,13 @@ variable "vm_version" {
   description = "Defaults to most current VM hardware supported by vCenter."
   type        = number
 }
+
+variable "convert_to_template" {
+  type    = bool
+  default = true
+}
+
+variable "os_version" {
+  type    = string
+  default = ""
+}
