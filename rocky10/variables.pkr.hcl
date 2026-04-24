@@ -65,11 +65,6 @@ variable "convert_to_template" {
   default = true
 }
 
-variable "build_timestamp" {
-  type    = string
-  default = "${formatdate("YYYY-MM-DD hh:mm:ss", timestamp())}"
-}
-
 variable "os_version" {
   type    = string
   default = ""

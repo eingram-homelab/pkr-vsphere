@@ -29,6 +29,11 @@ local "ssh_password" {
   sensitive  = true
 }
 
+locals {
+  build_timestamp = formatdate("YYYY-MM-DD hh:mm:ss", timestamp())
+  vm_name         = "${var.vsphere_template_name}__${local.build_timestamp}"
+}
+
 build {
   sources = ["source.vsphere-iso.rocky"]
 
@@ -61,8 +66,8 @@ build {
     output     = "${abspath(path.root)}/build-manifest.json"
     strip_path = true
     custom_data = {
-      build_timestamp = var.build_timestamp
-      vm_name         = "${var.vsphere_template_name}__${var.build_timestamp}"
+      build_timestamp = local.build_timestamp
+      vm_name         = local.vm_name
       os_version      = var.os_version
     }
   }
@@ -82,7 +87,7 @@ source "vsphere-iso" "rocky" {
   host                = var.vsphere_host
   datastore           = var.vcenter_datastore
   folder              = var.vm_folder
-  vm_name             = "${var.vsphere_template_name}__${var.build_timestamp}"
+  vm_name             = local.vm_name
   vm_version          = var.vm_version
   firmware            = "efi"
   convert_to_template = var.convert_to_template
@@ -94,7 +99,7 @@ source "vsphere-iso" "rocky" {
   RAM             = var.mem_size
   RAM_hot_plug    = true
   RAM_reserve_all = false
-  notes           = "Packer build ${var.build_timestamp}."
+  notes           = "Packer build ${local.build_timestamp}."
 
   network_adapters {
     network      = var.vm_network
