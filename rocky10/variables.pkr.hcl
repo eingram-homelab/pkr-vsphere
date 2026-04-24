@@ -59,3 +59,18 @@ variable "vm_version" {
   description = "Defaults to most current VM hardware supported by vCenter."
   type        = number
 }
+
+variable "convert_to_template" {
+  type    = bool
+  default = true
+}
+
+variable "build_timestamp" {
+  type    = string
+  default = "${formatdate("YYYY-MM-DD hh:mm:ss", timestamp())}"
+}
+
+variable "os_version" {
+  type    = string
+  default = ""
+}

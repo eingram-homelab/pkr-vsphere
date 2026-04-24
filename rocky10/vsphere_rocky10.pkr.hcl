@@ -3,8 +3,8 @@
 packer {
   required_plugins {
     vsphere = {
-      source  = "github.com/hashicorp/vsphere"
-      version = "~> 1"
+      source  = "github.com/vmware/vsphere"
+      version = "2.1.2"
     }
   }
 }
@@ -28,14 +28,6 @@ local "ssh_password" {
   expression = vault("/secret/ssh/eingram", "ssh_password")
   sensitive  = true
 }
-
-# locals {
-#   data_source_content = {
-#     "/ks.cfg" = templatefile("${abspath(path.root)}/data/ks.pkrtpl.hcl", {
-#       password = local.encrypted_password
-#     })
-#   }
-# }
 
 build {
   sources = ["source.vsphere-iso.rocky"]
@@ -69,9 +61,9 @@ build {
     output     = "${abspath(path.root)}/build-manifest.json"
     strip_path = true
     custom_data = {
-      build_timestamp = "${formatdate("YYYY-MM-DD hh:mm:ss", timestamp())}"
-      vm_name         = "${var.vsphere_template_name}__${formatdate("YYYYMMDDHHmmss", timestamp())}"
-      os_version      = "Rocky Linux 9"
+      build_timestamp = var.build_timestamp
+      vm_name         = "${var.vsphere_template_name}__${var.build_timestamp}"
+      os_version      = var.os_version
     }
   }
 }
@@ -82,30 +74,30 @@ source "vsphere-iso" "rocky" {
 
   # vCenter parameters
   insecure_connection = "true"
-  username            = "${local.vsphere_user}"
-  password            = "${local.vsphere_password}"
-  vcenter_server      = "${var.vcenter_server}"
-  cluster             = "${var.vcenter_cluster}"
-  datacenter          = "${var.vcenter_dc_name}"
-  host                = "${var.vsphere_host}"
-  datastore           = "${var.vcenter_datastore}"
-  folder              = "${var.vm_folder}"
-  vm_name             = "${var.vsphere_template_name}__${formatdate("YYYYMMDDHHmmss", timestamp())}"
+  username            = local.vsphere_user
+  password            = local.vsphere_password
+  vcenter_server      = var.vcenter_server
+  cluster             = var.vcenter_cluster
+  datacenter          = var.vcenter_dc_name
+  host                = var.vsphere_host
+  datastore           = var.vcenter_datastore
+  folder              = var.vm_folder
+  vm_name             = "${var.vsphere_template_name}__${var.build_timestamp}"
   vm_version          = var.vm_version
   firmware            = "efi"
-  convert_to_template = true
+  convert_to_template = var.convert_to_template
 
   # VM resource parameters 
   guest_os_type   = "rhel9_64Guest"
-  CPUs            = "${var.cpu_num}"
+  CPUs            = var.cpu_num
   CPU_hot_plug    = true
-  RAM             = "${var.mem_size}"
+  RAM             = var.mem_size
   RAM_hot_plug    = true
   RAM_reserve_all = false
-  notes           = "Packer build ${formatdate("YYYYMMDDHHmmss", timestamp())}."
+  notes           = "Packer build ${var.build_timestamp}."
 
   network_adapters {
-    network      = "${var.vm_network}"
+    network      = var.vm_network
     network_card = "vmxnet3"
   }
 
@@ -116,7 +108,7 @@ source "vsphere-iso" "rocky" {
   }
 
   iso_paths = [
-    "${var.os_iso_path}"
+    var.os_iso_path
   ]
 
   # Rocky OS parameters
