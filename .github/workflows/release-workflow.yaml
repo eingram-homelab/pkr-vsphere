@@ -3,7 +3,8 @@ name: Release Workflow
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - '**.pkr.hcl'
   workflow_dispatch:
@@ -14,7 +15,7 @@ on:
         type: string
 
 jobs:
-  validate:
+  build:
     uses: eingram-homelab/reusable_workflows/.github/workflows/_packer-build.yaml@main
     name: Build vSphere Template
     with:
@@ -24,13 +25,13 @@ jobs:
       GCP_STORAGE: ${{ secrets.GCP_STORAGE }}
 
   gate:
-    needs: [validate]
+    needs: build
     if: always()
     runs-on: arc-runners
     steps:
       - name: Check validation result
         run: |
-          result="${{ needs.validate.result }}"
+          result="${{ needs.build.result }}"
           if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
             exit 1
           fi
